@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "tableau-desktop": {
+      "command": "C:\\tableau-mcp\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "tableau_mcp.server"],
+      "cwd": "C:\\tableau-mcp",
+      "env": {
+        "TABLEAU_MCP_WORKBOOKS_DIR": "C:\\tableau-mcp\\workbooks",
+        "TABLEAU_MCP_BACKUPS_DIR": "C:\\tableau-mcp\\backups",
+        "TABLEAU_MCP_LOGS_DIR": "C:\\tableau-mcp\\logs",
+        "TABLEAU_MCP_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
