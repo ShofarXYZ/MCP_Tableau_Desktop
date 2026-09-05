@@ -98,7 +98,7 @@ FORMULA_TEMPLATES: dict[str, str] = {
     "average": "AVG([{field}])",
     "distinct_count": "COUNTD([{field}])",
     "ratio": "SUM([{numerator}]) / SUM([{denominator}])",
-    "safe_ratio": "SUM([{numerator}]) / NULLIF(SUM([{denominator}]), 0)",
+    "safe_ratio": "IIF(SUM([{denominator}]) = 0, NULL, SUM([{numerator}]) / SUM([{denominator}]))",
     "average_per_id": "SUM([{value}]) / COUNTD([{id}])",
 }
 

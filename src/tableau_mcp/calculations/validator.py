@@ -110,7 +110,7 @@ def _check_division_by_zero(formula: str, issues: list[ValidationIssue]) -> None
                 severity="warning",
                 code="division_by_zero",
                 message="Possible division by a literal zero.",
-                suggestion="Wrap the denominator with NULLIF(..., 0) or ZN() to avoid errors.",
+                suggestion="Guard it with IIF(denom = 0, NULL, num / denom) to avoid errors.",
             )
         )
     elif "/" in masked:
@@ -119,7 +119,7 @@ def _check_division_by_zero(formula: str, issues: list[ValidationIssue]) -> None
                 severity="info",
                 code="division_present",
                 message="Formula performs division.",
-                suggestion="Guard the denominator (e.g. NULLIF(denom, 0)) if it can be zero.",
+                suggestion="Guard it with IIF(denom = 0, NULL, num / denom) if it can be zero.",
             )
         )
 

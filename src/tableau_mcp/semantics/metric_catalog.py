@@ -94,14 +94,15 @@ def suggest_metrics(index: FieldIndex) -> list[MetricSuggestion]:
     if rev and cost:
         add(
             "Margem %",
-            f"(SUM({_ref(rev)}) - SUM({_ref(cost)})) / NULLIF(SUM({_ref(rev)}), 0)",
+            f"IIF(SUM({_ref(rev)}) = 0, NULL, "
+            f"(SUM({_ref(rev)}) - SUM({_ref(cost)})) / SUM({_ref(rev)}))",
             "Percentual de lucro sobre a receita (guardado contra divisão por zero).",
             "ratio",
         )
     elif rev and profit:
         add(
             "Margem %",
-            f"SUM({_ref(profit)}) / NULLIF(SUM({_ref(rev)}), 0)",
+            f"IIF(SUM({_ref(rev)}) = 0, NULL, SUM({_ref(profit)}) / SUM({_ref(rev)}))",
             "Lucro informado dividido pela receita.",
             "ratio",
         )
@@ -126,7 +127,7 @@ def suggest_metrics(index: FieldIndex) -> list[MetricSuggestion]:
     if rev and order:
         add(
             "Ticket Médio",
-            f"SUM({_ref(rev)}) / NULLIF(COUNTD({_ref(order)}), 0)",
+            f"IIF(COUNTD({_ref(order)}) = 0, NULL, SUM({_ref(rev)}) / COUNTD({_ref(order)}))",
             "Receita média por pedido.",
             "ratio",
         )
@@ -137,35 +138,35 @@ def suggest_metrics(index: FieldIndex) -> list[MetricSuggestion]:
     if rev and customer:
         add(
             "Receita por Cliente",
-            f"SUM({_ref(rev)}) / NULLIF(COUNTD({_ref(customer)}), 0)",
+            f"IIF(COUNTD({_ref(customer)}) = 0, NULL, SUM({_ref(rev)}) / COUNTD({_ref(customer)}))",
             "Receita média gerada por cliente.",
             "ratio",
         )
     if rev and product:
         add(
             "Receita por Produto",
-            f"SUM({_ref(rev)}) / NULLIF(COUNTD({_ref(product)}), 0)",
+            f"IIF(COUNTD({_ref(product)}) = 0, NULL, SUM({_ref(rev)}) / COUNTD({_ref(product)}))",
             "Receita média por produto distinto.",
             "ratio",
         )
     if rev and category:
         add(
             "Receita por Categoria",
-            f"SUM({_ref(rev)}) / NULLIF(COUNTD({_ref(category)}), 0)",
+            f"IIF(COUNTD({_ref(category)}) = 0, NULL, SUM({_ref(rev)}) / COUNTD({_ref(category)}))",
             "Receita média por categoria distinta.",
             "ratio",
         )
     if rev and channel:
         add(
             "Receita por Canal",
-            f"SUM({_ref(rev)}) / NULLIF(COUNTD({_ref(channel)}), 0)",
+            f"IIF(COUNTD({_ref(channel)}) = 0, NULL, SUM({_ref(rev)}) / COUNTD({_ref(channel)}))",
             "Receita média por canal distinto.",
             "ratio",
         )
     if rev and geo:
         add(
             "Receita por Estado",
-            f"SUM({_ref(rev)}) / NULLIF(COUNTD({_ref(geo)}), 0)",
+            f"IIF(COUNTD({_ref(geo)}) = 0, NULL, SUM({_ref(rev)}) / COUNTD({_ref(geo)}))",
             f"Receita média por {geo.caption} distinto.",
             "ratio",
         )
@@ -182,16 +183,18 @@ def suggest_metrics(index: FieldIndex) -> list[MetricSuggestion]:
     if rev and date:
         add(
             "MoM",
+            f"IIF(LOOKUP(SUM({_ref(rev)}), -1) = 0, NULL, "
             f"(SUM({_ref(rev)}) - LOOKUP(SUM({_ref(rev)}), -1)) "
-            f"/ ABS(NULLIF(LOOKUP(SUM({_ref(rev)}), -1), 0))",
+            f"/ ABS(LOOKUP(SUM({_ref(rev)}), -1)))",
             "Variação mês a mês; use com o eixo temporal ordenado por mês.",
             "time",
             requires_view_context=True,
         )
         add(
             "YoY",
+            f"IIF(LOOKUP(SUM({_ref(rev)}), -12) = 0, NULL, "
             f"(SUM({_ref(rev)}) - LOOKUP(SUM({_ref(rev)}), -12)) "
-            f"/ ABS(NULLIF(LOOKUP(SUM({_ref(rev)}), -12), 0))",
+            f"/ ABS(LOOKUP(SUM({_ref(rev)}), -12)))",
             "Variação ano a ano; use com granularidade mensal.",
             "time",
             requires_view_context=True,
